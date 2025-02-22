@@ -107,7 +107,24 @@ let selectedWebsite = null,
             .then((answers) => {
               selectedWebsite = answers.website;
               fs.mkdirSync(path.join(rootPath, selectedWebsite));
-              return resolve(selectedWebsite);
+
+              inq
+                .prompt([
+                  {
+                    type: "input",
+                    message: "Enter website url (in regex):",
+                    name: "regex",
+                    default: `/${selectedWebsite}/gi`,
+                  },
+                ])
+                .then((answers) => {
+                  fs.writeFileSync(
+                    path.join(rootPath, selectedWebsite, "config.js"),
+                    `const regex = ${answers.regex};`
+                  );
+
+                  return resolve(selectedWebsite);
+                });
             })
             .catch(reject);
         })
